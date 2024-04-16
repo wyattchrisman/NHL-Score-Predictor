@@ -6,24 +6,30 @@ date: "2024-04-16"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Load all needed packages
+pacman::p_load(dplyr)
+
+# Changing default themes
+theme_set(theme_bw())
+theme_update(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+
+# Changing the default choice for how many decimal places are displayed
+options(digits = 4)
 ```
 
-## R Markdown
+# Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+In the NHL, there are many ways for fans to bet on the games. One of those ways is guessing if the total number of goals scored by both teams is over or under a set line. This is known as the over/under and is normally denoted as O/U. The standard line for O/U is 5.5 goals. We will be using this metric for all of our data. The half a goal may be confusing, although this is because in hockey you can only score goals in 1s. So, if the total number of goals is <5 the under will hit. And if the total is >5 the over will hit. This allows every possible result of the game goal wise to have a result for the O/U.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Getting Data
 
-```{r cars}
-summary(cars)
-```
+In the chunk below we will be getting all NFL games from the last 5 games in every game scenario, (even strength, power play, penalty kill, etc.) and will be trimming this data so we get the statistics from each game in all scenario.
 
-## Including Plots
+```{r Getting Data}
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
