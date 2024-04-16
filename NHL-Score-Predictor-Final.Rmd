@@ -38,9 +38,18 @@ data <-
   filter(season > 2013) |>
   filter(situation == 'all')
 
+# Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team:name, playerTeam:gameDate, xGoalsPercentage: )
+  dplyr::select(team:name, playerTeam:gameDate, xGoalsPercentage, xGoalsFor, scoreVenueAdjustedxGoalsFor, shotsOnGoalFor:goalsFor, penalityMinutesFor, hitsFor:giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, scoreVenueAdjustedxGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, penalityMinutesAgainst, hitsAgainst:giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  mutate(totalGoals = goalsAgainst + goalsFor) |>
+  mutate(
+    OU = if_else(
+      totalGoals < 5,
+      "under",
+      "over"
+    )
+  )
 
 # Sort by most recent games with date
 data <-
