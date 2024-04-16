@@ -32,17 +32,21 @@ In the chunk below we will be getting all NFL games from the last 5 games in eve
 all_years_data <- 
   read.csv(url("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")) 
   
-# Clip data to be 2018 and on
-all_years_data <-
+# Clip data to be >2014 and all situations
+data <-
   all_years_data |>
-  dplyr::filter(season > 2017)
+  filter(season > 2013) |>
+  filter(situation == 'all')
+
+data <- 
+  data |>
+  dplyr::select(team:name, playerTeam:gameDate, xGoalsPercentage: )
 
 # Sort by most recent games with date
-all_years_data <-
-  all_years_data[order(all_years_data$gameDate, decreasing = T), ]
+data <-
+  data[order(data$gameDate, decreasing = T), ]
 
 # Preview vector
-tibble(all_years_data)
+tibble(data)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
