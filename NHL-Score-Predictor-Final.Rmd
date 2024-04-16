@@ -8,7 +8,7 @@ date: "2024-04-16"
 knitr::opts_chunk$set(echo = TRUE)
 
 # Load all needed packages
-pacman::p_load(dplyr)
+pacman::p_load(tidyverse, dplyr)
 
 # Changing default themes
 theme_set(theme_bw())
@@ -28,8 +28,21 @@ In the NHL, there are many ways for fans to bet on the games. One of those ways 
 In the chunk below we will be getting all NFL games from the last 5 games in every game scenario, (even strength, power play, penalty kill, etc.) and will be trimming this data so we get the statistics from each game in all scenario.
 
 ```{r Getting Data}
+# Get all NHL data from 2008 on
+all_years_data <- 
+  read.csv(url("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")) 
+  
+# Clip data to be 2018 and on
+all_years_data <-
+  all_years_data |>
+  dplyr::filter(season > 2017)
 
+# Sort by most recent games with date
+all_years_data <-
+  all_years_data[order(all_years_data$gameDate, decreasing = T), ]
 
+# Preview vector
+tibble(all_years_data)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
