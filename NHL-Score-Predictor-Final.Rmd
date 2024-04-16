@@ -21,6 +21,8 @@ options(digits = 4)
 
 # Introduction
 
+Wyatt TODO: ADD MORE - where datas from, what was cleaned
+
 In the NHL, there are many ways for fans to bet on the games. One of those ways is guessing if the total number of goals scored by both teams is over or under a set line. This is known as the over/under and is normally denoted as O/U. The standard line for O/U is 5.5 goals. We will be using this metric for all of our data. The half a goal may be confusing, although this is because in hockey you can only score goals in 1s. So, if the total number of goals is \<5 the under will hit. And if the total is \>5 the over will hit. This allows every possible result of the game goal wise to have a result for the O/U.
 
 ## Getting Data
@@ -124,3 +126,10 @@ ggplot(
 
 
 ```
+Wyatt TODO: Add graph desciption, change color, sort
+
+## Graph2 - See if higher total shots cause over - would need to add total shots column to data
+
+## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
+
+## Graph4 - 
