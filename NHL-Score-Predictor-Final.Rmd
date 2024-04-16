@@ -67,9 +67,60 @@ data <- cbind(df_without_last_cols[, 1:insert_position], cols_to_move, df_withou
 data <-
   data[order(data$gameDate, decreasing = T), ]
 
+# Get teams individual data
+#summarize(data)
+
 # Remove data not used again
 rm(cols_to_move, df_without_last_cols, insert_position)
 
 # Preview vector
 tibble(data)
+```
+
+
+## Over Under Probability Graph
+
+```{r Over Under Probability Graph}
+# Get data
+ggplot(
+  data = data,
+  mapping = aes(
+    y = team,
+    fill = OU
+  )
+)+
+# Set type of graph
+ geom_bar(
+  position = "fill"
+) + 
+  # Set colors
+  scale_fill_manual(
+    values = c(
+      "Under" = "#8F8F8C",
+      "Over" = "#006847"
+    )
+  ) + 
+  # Set percentages
+  scale_x_continuous(
+    labels = scales::label_percent()
+  ) + 
+  # Create labels
+  labs(
+    y = "NHL Teams",
+    title = "NHL Team O/U Chances"
+  ) + 
+  # Set graph on bottom and add percentages
+  scale_x_continuous(
+    expand = c(0,0,0.05,-0.05),
+    labels = scales::label_percent()
+  ) +
+  # Set legend title blank and legend to bottom
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    axis.title.x = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  ) 
+
+
 ```
