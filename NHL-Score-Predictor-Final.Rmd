@@ -21,7 +21,7 @@ options(digits = 4)
 
 # Introduction
 
-In the NHL, there are many ways for fans to bet on the games. One of those ways is guessing if the total number of goals scored by both teams is over or under a set line. This is known as the over/under and is normally denoted as O/U. The standard line for O/U is 5.5 goals. We will be using this metric for all of our data. The half a goal may be confusing, although this is because in hockey you can only score goals in 1s. So, if the total number of goals is <5 the under will hit. And if the total is >5 the over will hit. This allows every possible result of the game goal wise to have a result for the O/U.
+In the NHL, there are many ways for fans to bet on the games. One of those ways is guessing if the total number of goals scored by both teams is over or under a set line. This is known as the over/under and is normally denoted as O/U. The standard line for O/U is 5.5 goals. We will be using this metric for all of our data. The half a goal may be confusing, although this is because in hockey you can only score goals in 1s. So, if the total number of goals is \<5 the under will hit. And if the total is \>5 the over will hit. This allows every possible result of the game goal wise to have a result for the O/U.
 
 ## Getting Data
 
@@ -46,12 +46,12 @@ data <-
   mutate(
     OU = if_else(
       totalGoals < 5,
-      "under",
-      "over"
+      "Under",
+      "Over"
     )
   )
 
-# Move totalGoals and OU closer to front of dataframe
+# Move totalGoals and OU closer to front of dataframe for readability
 cols_to_move <- 
   data |>
   select(totalGoals, OU)
@@ -63,14 +63,13 @@ df_without_last_cols <-
 insert_position <- 5
 data <- cbind(df_without_last_cols[, 1:insert_position], cols_to_move, df_without_last_cols[, (insert_position + 1):ncol(df_without_last_cols)])
 
-
 # Sort by most recent games with date
 data <-
-  data[order(data$gameDate, decreasing = F), ]
+  data[order(data$gameDate, decreasing = T), ]
 
-
+# Remove data not used again
+rm(cols_to_move, df_without_last_cols, insert_position)
 
 # Preview vector
 tibble(data)
 ```
-
