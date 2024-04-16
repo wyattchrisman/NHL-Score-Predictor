@@ -41,7 +41,7 @@ data <-
 # Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team:name, playerTeam:gameDate, xGoalsPercentage, xGoalsFor, scoreVenueAdjustedxGoalsFor, shotsOnGoalFor:goalsFor, penalityMinutesFor, hitsFor:giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, scoreVenueAdjustedxGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, penalityMinutesAgainst, hitsAgainst:giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  dplyr::select(team, season, opposingTeam:gameDate, xGoalsPercentage, xGoalsFor, scoreVenueAdjustedxGoalsFor, shotsOnGoalFor:goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, scoreVenueAdjustedxGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, penalityMinutesAgainst, hitsAgainst:giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
   mutate(
     OU = if_else(
@@ -51,9 +51,24 @@ data <-
     )
   )
 
+# Move totalGoals and OU closer to front of dataframe
+cols_to_move <- 
+  data |>
+  select(totalGoals, OU)
+
+df_without_last_cols <- 
+  data |>
+  select(team:highDangerGoalsAgainst)
+
+insert_position <- 5
+data <- cbind(df_without_last_cols[, 1:insert_position], cols_to_move, df_without_last_cols[, (insert_position + 1):ncol(df_without_last_cols)])
+
+
 # Sort by most recent games with date
 data <-
-  data[order(data$gameDate, decreasing = T), ]
+  data[order(data$gameDate, decreasing = F), ]
+
+
 
 # Preview vector
 tibble(data)
