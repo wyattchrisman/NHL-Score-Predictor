@@ -43,7 +43,7 @@ data <-
 # Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerShotsFor, lowDangerGoalsFor:highDangerGoalsFor,shotsOnGoalAgainst:xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerShotsFor, lowDangerGoalsFor:shotsOnGoalAgainst, xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
   mutate(totalShots = shotsOnGoalAgainst + shotsOnGoalFor) |>
   mutate(
@@ -80,15 +80,26 @@ rm(cols_to_move, df_without_last_cols, insert_position)
 tibble(data)
 ```
 
-
 ## Over Under Probability Graph
 
 ```{r Over Under Probability Graph}
-# Get data
+# Get the over percentage of each team
+team_OU_percent <-
+  data |>
+  group_by(team) |>
+  mutate(over_percent = sum(OU == "Over", na.rm = T)/ sum(!is.na(OU))) |>
+  select(over_percent, OU) 
+
+# Arrange the over percentages in descending order
+team_OU_percent <-
+team_OU_percent[order(team_OU_percent$over_percent, decreasing = F), ]
+
+
+# Create graph
 ggplot(
-  data = data,
+  data = team_OU_percent,
   mapping = aes(
-    y = fct_rev(team),
+    y = reorder(team, over_percent),
     fill = OU
   )
 )+
@@ -96,25 +107,23 @@ ggplot(
  geom_bar(
   position = "fill"
 ) + 
-  # Set colors
+  # Set colors of fill
   scale_fill_manual(
     values = c(
-      "Under" = "#8F8F8C",
-      "Over" = "#006847"
-    )
+      "Over" = "#006847",
+      "Under" = "#8F8F8C"
+    ),
+    # Reverse order of key
+    guide = guide_legend(reverse = TRUE)
   ) + 
-  # Set percentages
-  scale_x_continuous(
-    labels = scales::label_percent()
-  ) + 
-  # Create labels
+  # Create labels for graph
   labs(
     y = "NHL Teams",
     title = "NHL Team O/U Probablities"
   ) + 
-  # Set graph on bottom and add percentages
+  # Set graph to have minimal whitespace on sides and add percentages
   scale_x_continuous(
-    expand = c(0,0,0.05,-0.05),
+    expand = c(0,0,0.05,-0.04),
     labels = scales::label_percent()
   ) +
   # Set legend title blank and legend to bottom
@@ -127,10 +136,11 @@ ggplot(
 
 
 ```
-Wyatt TODO: Add graph desciption, change color, sort
 
-## Graph2 - See if higher total shots cause over 
+Wyatt TODO: Add graph description, change color, sort
+
+## Graph2 - See if higher total shots cause over
 
 ## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
 
-## Graph4 - 
+## Graph4 -
