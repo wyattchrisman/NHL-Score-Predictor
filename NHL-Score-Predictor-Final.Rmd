@@ -45,6 +45,7 @@ data <-
   data |>
   dplyr::select(team, season, opposingTeam:gameDate, xGoalsPercentage, xGoalsFor, scoreVenueAdjustedxGoalsFor, shotsOnGoalFor:goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, scoreVenueAdjustedxGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, penalityMinutesAgainst, hitsAgainst:giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
+  mutate(totalShots = shotsOnGoalAgainst + shotsOnGoalFor) |>
   mutate(
     OU = if_else(
       totalGoals < 5,
@@ -56,7 +57,7 @@ data <-
 # Move totalGoals and OU closer to front of dataframe for readability
 cols_to_move <- 
   data |>
-  select(totalGoals, OU)
+  select(totalGoals, OU, totalShots)
 
 df_without_last_cols <- 
   data |>
@@ -109,7 +110,7 @@ ggplot(
   # Create labels
   labs(
     y = "NHL Teams",
-    title = "NHL Team O/U Chances"
+    title = "NHL Team O/U Probablities"
   ) + 
   # Set graph on bottom and add percentages
   scale_x_continuous(
@@ -128,7 +129,7 @@ ggplot(
 ```
 Wyatt TODO: Add graph desciption, change color, sort
 
-## Graph2 - See if higher total shots cause over - would need to add total shots column to data
+## Graph2 - See if higher total shots cause over 
 
 ## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
 
