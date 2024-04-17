@@ -43,7 +43,7 @@ data <-
 # Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team, season, opposingTeam:gameDate, xGoalsPercentage, xGoalsFor, scoreVenueAdjustedxGoalsFor, shotsOnGoalFor:goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, scoreVenueAdjustedxGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, penalityMinutesAgainst, hitsAgainst:giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerShotsFor, lowDangerGoalsFor:highDangerGoalsFor,shotsOnGoalAgainst:xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
   mutate(totalShots = shotsOnGoalAgainst + shotsOnGoalFor) |>
   mutate(
