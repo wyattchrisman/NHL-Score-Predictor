@@ -88,7 +88,7 @@ tibble(data)
 ggplot(
   data = data,
   mapping = aes(
-    y = team,
+    y = fct_rev(team),
     fill = OU
   )
 )+
