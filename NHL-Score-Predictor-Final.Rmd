@@ -35,7 +35,7 @@ In the chunk below we will be getting all NHL games from the last 10 years in ev
 ```{r Getting Data}
 # Get all NHL data from 2008 on
 all_years_data <- 
-  read.csv(url("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")) 
+  read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
   
 # Clip data to be >2014 and all situations
 data <-
@@ -46,7 +46,7 @@ data <-
 # Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerShotsFor, lowDangerGoalsFor:shotsOnGoalAgainst, xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
   mutate(totalShots = shotsOnGoalAgainst + shotsOnGoalFor) |>
   mutate(
@@ -134,9 +134,9 @@ ggplot(
     mapping = aes(
       label = round(under_percent,2)*100
     ),
-    vjust = 3, 
+    vjust = 2, 
     color = "black",
-    size = 2
+    size = 3
   ) +
 
   # Set colors of fill
@@ -163,7 +163,7 @@ ggplot(
     axis.title.y = element_blank(),
     axis.title.x = element_blank(),
     plot.title = element_text(hjust = 0.5, face = "bold"),
-    axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=1)
+    axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
 
 
@@ -210,5 +210,14 @@ shot_scatterplot
 
 
 ## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
+```{r L/M/H Danger shots}
 
-## Graph4 -
+data |>
+  select(team:OU, shotsOnGoalFor, lowDangerShotsFor:highDangerGoalsFor)
+         
+
+
+#tibble(data)
+```
+
+## Graph4 - Average goals/game of each team per season
