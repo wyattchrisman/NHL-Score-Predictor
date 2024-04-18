@@ -37,7 +37,7 @@ In the chunk below we will be getting all NHL games from the last 10 years in ev
 all_years_data <- 
   read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
   
-# Clip data to be >2014 and all situations
+# Clip data to be >2013 and all situations
 data <-
   all_years_data |>
   filter(season > 2013) |>
@@ -82,14 +82,15 @@ df_without_last_cols <-
 
 #where to index column
 insert_position <- 5
-data <- cbind(df_without_last_cols[, 1:insert_position], cols_to_move, df_without_last_cols[, (insert_position + 1):ncol(df_without_last_cols)])
+data <- cbind(
+  df_without_last_cols[, 1:insert_position], 
+  cols_to_move, 
+  df_without_last_cols[, (insert_position + 1):ncol(df_without_last_cols)]
+)
 
 # Sort by most recent games with date
 data <-
   data[order(data$gameDate, decreasing = T), ]
-
-# Get teams individual data
-#summarize(data)
 
 # Remove data not used again
 rm(cols_to_move, df_without_last_cols, insert_position)
@@ -111,11 +112,9 @@ team_OU_percent <-
   mutate(under_percent = sum(OU == "Under", na.rm = T) / sum(!is.na(OU))) |>
   select(under_percent, OU) 
 
-
 # Arrange the over percentages in descending order
 team_OU_percent <-
   team_OU_percent[order(team_OU_percent$under_percent, decreasing = F), ]
-
 
 # Create graph
 ggplot(
@@ -151,7 +150,7 @@ ggplot(
   # Create labels for graph
   labs(
     x = "NHL Teams",
-    title = "NHL Team Over/Under Probabilities (%)"
+    title = "NHL Team Over/Under Probabilities (%) in 2023"
   ) + 
   # Set graph to have minimal white-space and add percentages
   scale_y_continuous(
@@ -168,7 +167,7 @@ ggplot(
     axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
 
-
+data
 ```
 
 Wyatt TODO: Add graph description, change color, sort
@@ -176,7 +175,10 @@ Wyatt TODO: Add graph description, change color, sort
 ## Graph2 - See how higher total shots correlate to over
 ```{r total shot scatterplot}
 # subsetting for total shot
-total_shot_data <- data |> 
+total_shot_data <- 
+  data |> 
+  # remove duplicate games
+  filter(home_or_away == "HOME") |>
   #combing for the columns we'll be using
   select(team, totalShots, OU, shotsOnGoalFor, shotsOnGoalAgainst, goalsFor) 
   
@@ -223,7 +225,6 @@ data |>
 ```
 
 ## Graph4 - Average goals/game of each team per season
-Arjun TODO - Separate team name labels, 
 ```{r Average goals Graph}
 # Vector holding all the team colors
 team_colors <- c("ANA" = "#F47A38",
