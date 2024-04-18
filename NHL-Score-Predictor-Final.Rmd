@@ -271,7 +271,7 @@ average_goals_data <-
 ggplot(
   data = average_goals_data, 
   mapping = aes(
-    x = team, 
+    x = reorder(team, average_goals), 
     y = average_goals
   )
 ) +
@@ -283,16 +283,18 @@ ggplot(
   geom_hline(
     yintercept = 5.5, 
     linetype = "dashed", 
-    color = "black"
+    color = "white"
   ) +
   scale_y_continuous(
-     expand = c(0,0,0.05,0)
+     expand = c(0,0,0.05,0),
+     breaks = c(1,2,3,4,5.5,7)
 ) + 
   labs(title = "Average Total Goals per Game by Team for the 2023 Season",
        x = "Team",
        y = "Average Goals per Game") +
   theme(
     legend.position = "none",
+    axis.title.x = element_blank(),
     axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
 ```
