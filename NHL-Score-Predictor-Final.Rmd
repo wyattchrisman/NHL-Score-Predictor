@@ -5,7 +5,10 @@ date: "2024-04-16"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.align = "center",
+                      warning = F,
+                      message = F)
 
 # Load all needed packages
 pacman::p_load(tidyverse, dplyr, ggfittext)
@@ -52,7 +55,20 @@ data <-
       "Under",
       "Over"
     )
+  ) |>
+  mutate(
+    team = if_else(team == "T.B", "TBL", team)
+  ) |>
+  mutate(
+    team = if_else(team == "N.J", "NJD", team)
+  ) |>
+  mutate(
+    team = if_else(team == "L.A", "LAK", team)
+  ) |>
+  mutate(
+    team = if_else(team == "S.J", "SJS", team)
   )
+  
 
 # Move totalGoals and OU closer to front of dataframe for readability
 cols_to_move <- 
@@ -82,67 +98,72 @@ tibble(data)
 
 ## Over Under Probability Graph
 
+Wyatt TODO: Add labels to top of bars
+
 ```{r Over Under Probability Graph}
 # Get the over percentage of each team
 team_OU_percent <-
   data |>
   group_by(team) |>
-  mutate(over_percent = sum(OU == "Over", na.rm = T) / sum(!is.na(OU))) |>
-  select(over_percent, OU) 
+  mutate(under_percent = sum(OU == "Under", na.rm = T) / sum(!is.na(OU))) |>
+  select(under_percent, OU) 
 
 # Arrange the over percentages in descending order
 team_OU_percent <-
-team_OU_percent[order(team_OU_percent$over_percent, decreasing = F), ]
+  team_OU_percent[order(team_OU_percent$under_percent, decreasing = F), ]
 
 
 # Create graph
 ggplot(
   data = team_OU_percent,
   mapping = aes(
-    x = reorder(team, over_percent),
+    x = reorder(team, under_percent),
+    y = under_percent,
     fill = OU
   )
 ) +
-# Set type of graph
-  geom_bar(
+  # Set type of graph
+  geom_col(
     position = "fill"
   ) + 
-  # Add percentages to top of bar
-  # geom_text(
-  #   mapping = aes(
-  #     label = scales::percent(over_percent)
-  #   ),
-  #   vjust = 1.5, colour = "white"
-  # ) +
   
+  #Add percentages to top of
+  geom_text(
+    mapping = aes(
+      label = round(under_percent,2)*100
+    ),
+    vjust = 3, 
+    color = "black",
+    size = 2
+  ) +
+
   # Set colors of fill
   scale_fill_manual(
     values = c(
-      #"Over" = "#006847",
       "Over" = "#76b5c5",
       "Under" = "#e28743"
     ),
-    # Reverse order of key
-    guide = guide_legend(reverse = TRUE)
   ) + 
   # Create labels for graph
   labs(
-    y = "NHL Teams",
-    title = "NHL Team O/U Probablities"
+    x = "NHL Teams",
+    title = "NHL Team Over/Under Probabilities (%)"
   ) + 
-  # Set graph to have minimal whitespace on sides and add percentages
+  # Set graph to have minimal white-space and add percentages
   scale_y_continuous(
-    expand = c(0,0,0.05,-0.04),
+    expand = c(0,0,0.05,-0.05),
     labels = scales::label_percent()
   ) +
   # Set legend title blank and legend to bottom
   theme(
     legend.position = "bottom",
     legend.title = element_blank(),
+    axis.title.y = element_blank(),
     axis.title.x = element_blank(),
     plot.title = element_text(hjust = 0.5, face = "bold"),
     axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=1)
   ) 
+
 
 
 ```
