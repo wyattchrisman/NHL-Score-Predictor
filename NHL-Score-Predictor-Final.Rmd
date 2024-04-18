@@ -222,3 +222,57 @@ data |>
 ```
 
 ## Graph4 - Average goals/game of each team per season
+Arjun TODO - Separate team name labels, 
+```{r Average goals Graph}
+# Vector holding all the team colors
+team_colors <- c("ANA" = "#F47A38",
+                 "ARI" = "#8C2633",
+                 "BOS" = "#FFB81C",
+                 "BUF" = "#003087",
+                 "CGY" = "#D2001C", 
+                 "CAR" = "#CE1126", 
+                 "CHI" = "#CF0A2C", 
+                 "COL" = "#6F263D", 
+                 "CBJ" = "#002654", 
+                 "DAL" = "#006847", 
+                 "DET" = "#CE1126", 
+                 "EDM" = "#FF4C00",
+                 "FLA" = "#041E42", 
+                 "LAK" = "#111111", 
+                 "MIN" = "#154734", 
+                 "MTL" = "#AF1E2D", 
+                 "NSH" = "#041E42", 
+                 "NJD" = "#CE1126", 
+                 "NYI" = "#00539B",
+                 "NYR" = "#0038A8",
+                 "OTT" = "#000000",  
+                 "PHI" = "#F74902", 
+                 "PIT" = "#CFC493", 
+                 "SJS" = "#006D75",
+                 "SEA" = "#99D9D9",
+                 "STL" = "#002F87",
+                 "TBL" = "#002868",
+                 "TOR" = "#00205B",
+                 "VAN" = "#00843D",
+                 "VGK" = "#B4975A",
+                 "WSH" = "#C8102E",
+                 "WPG" = "#041E42")
+
+average_goals_data$team <- toupper(average_goals_data$team)
+# Group by team and season, then summarize to calculate the mean goals per game
+average_goals_data <- data %>%
+  filter(season == 2023) %>%
+  group_by(team) %>%
+  summarize(average_goals = mean(totalGoals), .groups = 'drop')
+
+#Using ggplot to create a bar chart
+ggplot(average_goals_data, aes(x = team, y = average_goals)) +
+  geom_bar(stat = "identity", aes(fill = team)) +
+  scale_fill_manual(values = team_colors) +
+  geom_hline(yintercept = 5.5, linetype = "dashed", color = "black") +
+  labs(title = "Average Goals per Game by Team for the 2023",
+       x = "Team",
+       y = "Average Goals per Game") +
+  theme_minimal() +
+  theme(legend.position = "none") 
+```
