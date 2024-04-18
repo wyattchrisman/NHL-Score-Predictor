@@ -87,7 +87,7 @@ tibble(data)
 team_OU_percent <-
   data |>
   group_by(team) |>
-  mutate(over_percent = sum(OU == "Over", na.rm = T)/ sum(!is.na(OU))) |>
+  mutate(over_percent = sum(OU == "Over", na.rm = T) / sum(!is.na(OU))) |>
   select(over_percent, OU) 
 
 # Arrange the over percentages in descending order
@@ -99,7 +99,7 @@ team_OU_percent[order(team_OU_percent$over_percent, decreasing = F), ]
 ggplot(
   data = team_OU_percent,
   mapping = aes(
-    y = reorder(team, over_percent),
+    x = reorder(team, over_percent),
     fill = OU
   )
 )+
@@ -110,8 +110,9 @@ ggplot(
   # Set colors of fill
   scale_fill_manual(
     values = c(
-      "Over" = "#006847",
-      "Under" = "#8F8F8C"
+      #"Over" = "#006847",
+      "Over" = "#76b5c5",
+      "Under" = "#e28743"
     ),
     # Reverse order of key
     guide = guide_legend(reverse = TRUE)
@@ -122,7 +123,7 @@ ggplot(
     title = "NHL Team O/U Probablities"
   ) + 
   # Set graph to have minimal whitespace on sides and add percentages
-  scale_x_continuous(
+  scale_y_continuous(
     expand = c(0,0,0.05,-0.04),
     labels = scales::label_percent()
   ) +
@@ -131,7 +132,8 @@ ggplot(
     legend.position = "bottom",
     legend.title = element_blank(),
     axis.title.x = element_blank(),
-    plot.title = element_text(hjust = 0.5, face = "bold")
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=1)
   ) 
 
 
