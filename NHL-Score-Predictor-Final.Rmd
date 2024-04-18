@@ -106,6 +106,7 @@ Wyatt TODO: Add labels to top of bars
 # Get the over percentage of each team
 team_OU_percent <-
   data |>
+  filter(season == 2023) |>
   group_by(team) |>
   mutate(under_percent = sum(OU == "Under", na.rm = T) / sum(!is.na(OU))) |>
   select(under_percent, OU) 
@@ -247,32 +248,51 @@ team_colors <- c("ANA" = "#F47A38",
                  "NYR" = "#0038A8",
                  "OTT" = "#000000",  
                  "PHI" = "#F74902", 
-                 "PIT" = "#CFC493", 
+                 "PIT" = "#FCB514", 
                  "SJS" = "#006D75",
                  "SEA" = "#99D9D9",
                  "STL" = "#002F87",
                  "TBL" = "#002868",
                  "TOR" = "#00205B",
-                 "VAN" = "#00843D",
+                 "VAN" = "#00205B",
                  "VGK" = "#B4975A",
                  "WSH" = "#C8102E",
                  "WPG" = "#041E42")
 
-average_goals_data$team <- toupper(average_goals_data$team)
+#average_goals_data$team <- toupper(average_goals_data$team)
 # Group by team and season, then summarize to calculate the mean goals per game
-average_goals_data <- data %>%
-  filter(season == 2023) %>%
-  group_by(team) %>%
-  summarize(average_goals = mean(totalGoals), .groups = 'drop')
+average_goals_data <- 
+  data |>
+  filter(season == 2023) |>
+  group_by(team) |>
+  summarize(average_goals = mean(totalGoals))
 
 #Using ggplot to create a bar chart
-ggplot(average_goals_data, aes(x = team, y = average_goals)) +
-  geom_bar(stat = "identity", aes(fill = team)) +
+ggplot(
+  data = average_goals_data, 
+  mapping = aes(
+    x = team, 
+    y = average_goals
+  )
+) +
+  geom_bar(
+    stat = "identity", 
+    aes(fill = team)
+  ) +
   scale_fill_manual(values = team_colors) +
-  geom_hline(yintercept = 5.5, linetype = "dashed", color = "black") +
-  labs(title = "Average Goals per Game by Team for the 2023",
+  geom_hline(
+    yintercept = 5.5, 
+    linetype = "dashed", 
+    color = "black"
+  ) +
+  scale_y_continuous(
+     expand = c(0,0,0.05,0)
+) + 
+  labs(title = "Average Total Goals per Game by Team for the 2023 Season",
        x = "Team",
        y = "Average Goals per Game") +
-  theme_minimal() +
-  theme(legend.position = "none") 
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
+  ) 
 ```
