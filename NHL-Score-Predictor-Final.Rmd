@@ -75,11 +75,12 @@ cols_to_move <-
   data |>
   select(totalGoals, OU, totalShots)
 
-
+#slicing first half for column partitioning
 df_without_last_cols <- 
   data |>
   select(team:highDangerGoalsAgainst)
 
+#where to index column
 insert_position <- 5
 data <- cbind(df_without_last_cols[, 1:insert_position], cols_to_move, df_without_last_cols[, (insert_position + 1):ncol(df_without_last_cols)])
 
@@ -171,7 +172,43 @@ ggplot(
 
 Wyatt TODO: Add graph description, change color, sort
 
-## Graph2 - See if higher total shots cause over
+## Graph2 - See how higher total shots correlate to over
+```{r total shot scatterplot}
+# subsetting for total shot
+total_shot_data <- data |> 
+  #combing for the columns we'll be using
+  select(team, totalShots, OU, shotsOnGoalFor, shotsOnGoalAgainst, goalsFor) 
+  
+#ggplot graph for comparing shots   
+shot_scatterplot <-
+  ggplot(data = total_shot_data,
+         mapping = aes(
+           x = shotsOnGoalFor,
+           y = shotsOnGoalAgainst,
+           color = OU
+         )
+         ) +
+  geom_point(
+    #using jitter to make the density of points more visible 
+    position=position_jitter(h=0.15,w=0.15)
+  )+
+  #choosing colors for the over vs under value
+  scale_color_manual(
+    values = c(
+      "Over" = "#3e9c35",
+      "Under" = "#FF0000"
+    )
+  ) + 
+  labs(
+    x = "Shots Taken",
+    y = "Shots Against",
+    color = ""
+  )
+
+shot_scatterplot
+
+```
+
 
 ## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
 ```{r L/M/H Danger shots}
