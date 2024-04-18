@@ -46,7 +46,7 @@ data <-
 # Select all columns wanted for graphs
 data <- 
   data |>
-  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerGoalsFor, xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
+  dplyr::select(team, season, opposingTeam:gameDate, xGoalsFor, shotsOnGoalFor, shotAttemptsFor, goalsFor, takeawaysFor, giveawaysFor, lowDangerShotsFor:highDangerShotsFor, lowDangerGoalsFor:highDangerGoalsFor,xGoalsAgainst, shotsOnGoalAgainst, shotAttemptsAgainst, goalsAgainst, takeawaysAgainst, giveawaysAgainst, lowDangerGoalsAgainst:highDangerGoalsAgainst) |>
   mutate(totalGoals = goalsAgainst + goalsFor) |>
   mutate(totalShots = shotsOnGoalAgainst + shotsOnGoalFor) |>
   mutate(
@@ -109,6 +109,7 @@ team_OU_percent <-
   mutate(under_percent = sum(OU == "Under", na.rm = T) / sum(!is.na(OU))) |>
   select(under_percent, OU) 
 
+
 # Arrange the over percentages in descending order
 team_OU_percent <-
   team_OU_percent[order(team_OU_percent$under_percent, decreasing = F), ]
@@ -120,7 +121,7 @@ ggplot(
   mapping = aes(
     x = reorder(team, under_percent),
     y = under_percent,
-    fill = OU
+    fill = factor(OU)
   )
 ) +
   # Set type of graph
