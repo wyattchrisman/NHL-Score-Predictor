@@ -165,7 +165,6 @@ ggplot(
   ) 
 
 
-
 ```
 
 Wyatt TODO: Add graph description, change color, sort
