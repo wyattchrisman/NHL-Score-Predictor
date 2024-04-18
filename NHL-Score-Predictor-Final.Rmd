@@ -99,10 +99,84 @@ rm(cols_to_move, df_without_last_cols, insert_position)
 tibble(data)
 ```
 
+## Average goals/game of each team in 2023
+```{r Average goals Graph}
+# Vector holding all the team colors
+team_colors <- c("ANA" = "#F47A38",
+                 "ARI" = "#8C2633",
+                 "BOS" = "#FFB81C",
+                 "BUF" = "#003087",
+                 "CGY" = "#D2001C", 
+                 "CAR" = "#CE1126", 
+                 "CHI" = "#CF0A2C", 
+                 "COL" = "#6F263D", 
+                 "CBJ" = "#002654", 
+                 "DAL" = "#006847", 
+                 "DET" = "#CE1126", 
+                 "EDM" = "#FF4C00",
+                 "FLA" = "#041E42", 
+                 "LAK" = "#111111", 
+                 "MIN" = "#154734", 
+                 "MTL" = "#AF1E2D", 
+                 "NSH" = "#041E42", 
+                 "NJD" = "#CE1126", 
+                 "NYI" = "#00539B",
+                 "NYR" = "#0038A8",
+                 "OTT" = "#000000",  
+                 "PHI" = "#F74902", 
+                 "PIT" = "#FCB514", 
+                 "SJS" = "#006D75",
+                 "SEA" = "#99D9D9",
+                 "STL" = "#002F87",
+                 "TBL" = "#002868",
+                 "TOR" = "#00205B",
+                 "VAN" = "#00205B",
+                 "VGK" = "#B4975A",
+                 "WSH" = "#C8102E",
+                 "WPG" = "#041E42")
+
+# Group by team and season, then summarize to calculate the mean goals per game
+average_goals_data <- 
+  data |>
+  filter(season == 2023) |>
+  group_by(team) |>
+  summarize(average_goals = mean(totalGoals))
+
+#Using ggplot to create a bar chart
+ggplot(
+  data = average_goals_data, 
+  mapping = aes(
+    x = reorder(team, average_goals), 
+    y = average_goals
+  )
+) +
+  geom_bar(
+    stat = "identity", 
+    aes(fill = team)
+  ) +
+  scale_fill_manual(values = team_colors) +
+  geom_hline(
+    yintercept = 5.5, 
+    linetype = "dashed", 
+    color = "white"
+  ) +
+  scale_y_continuous(
+     expand = c(0,0,0.05,0),
+     breaks = c(1,2,3,4,5.5,7)
+) + 
+  labs(title = "Average Total Goals per Game for the 2023 Season",
+       x = "Team",
+       y = "Average Goals per Game") +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
+  ) 
+```
+
+ADD GRAPH DESCRIPTION
+
 ## Over Under Probability Graph
-
-Wyatt TODO: Add labels to top of bars
-
 ```{r Over Under Probability Graph}
 # Get the over percentage of each team
 team_OU_percent <-
@@ -166,10 +240,7 @@ ggplot(
     plot.title = element_text(hjust = 0.5, face = "bold"),
     axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
-
-data
 ```
-
 Wyatt TODO: Add graph description, change color, sort
 
 ## Graph2 - See how higher total shots correlate to over
@@ -209,93 +280,29 @@ shot_scatterplot <-
   )
 
 shot_scatterplot
-
 ```
+ADD GRAPH DECRIPTION
 
-
-## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
+## Low, Medium, High Danger Shots to Goals
 ```{r L/M/H Danger shots}
-
-data |>
-  select(team:OU, shotsOnGoalFor, lowDangerShotsFor:highDangerGoalsFor)
-         
-
-
-#tibble(data)
-```
-
-## Graph4 - Average goals/game of each team per season
-```{r Average goals Graph}
-# Vector holding all the team colors
-team_colors <- c("ANA" = "#F47A38",
-                 "ARI" = "#8C2633",
-                 "BOS" = "#FFB81C",
-                 "BUF" = "#003087",
-                 "CGY" = "#D2001C", 
-                 "CAR" = "#CE1126", 
-                 "CHI" = "#CF0A2C", 
-                 "COL" = "#6F263D", 
-                 "CBJ" = "#002654", 
-                 "DAL" = "#006847", 
-                 "DET" = "#CE1126", 
-                 "EDM" = "#FF4C00",
-                 "FLA" = "#041E42", 
-                 "LAK" = "#111111", 
-                 "MIN" = "#154734", 
-                 "MTL" = "#AF1E2D", 
-                 "NSH" = "#041E42", 
-                 "NJD" = "#CE1126", 
-                 "NYI" = "#00539B",
-                 "NYR" = "#0038A8",
-                 "OTT" = "#000000",  
-                 "PHI" = "#F74902", 
-                 "PIT" = "#FCB514", 
-                 "SJS" = "#006D75",
-                 "SEA" = "#99D9D9",
-                 "STL" = "#002F87",
-                 "TBL" = "#002868",
-                 "TOR" = "#00205B",
-                 "VAN" = "#00205B",
-                 "VGK" = "#B4975A",
-                 "WSH" = "#C8102E",
-                 "WPG" = "#041E42")
-
-#average_goals_data$team <- toupper(average_goals_data$team)
-# Group by team and season, then summarize to calculate the mean goals per game
-average_goals_data <- 
+LMH_data <-
   data |>
   filter(season == 2023) |>
-  group_by(team) |>
-  summarize(average_goals = mean(totalGoals))
+  select(team:gameDate, OU, shotsOnGoalFor, goalsFor,lowDangerShotsFor:highDangerGoalsFor)
 
-#Using ggplot to create a bar chart
+LMH_data_long <- 
+  LMH_data |>
+  pivot_longer(cols = c(lowDangerShotsFor, mediumDangerShotsFor, highDangerShotsFor),
+               names_to = "shotType",
+               values_to = "shots")
+
 ggplot(
-  data = average_goals_data, 
-  mapping = aes(
-    x = reorder(team, average_goals), 
-    y = average_goals
-  )
-) +
-  geom_bar(
-    stat = "identity", 
-    aes(fill = team)
-  ) +
-  scale_fill_manual(values = team_colors) +
-  geom_hline(
-    yintercept = 5.5, 
-    linetype = "dashed", 
-    color = "white"
-  ) +
-  scale_y_continuous(
-     expand = c(0,0,0.05,0),
-     breaks = c(1,2,3,4,5.5,7)
-) + 
-  labs(title = "Average Total Goals per Game by Team for the 2023 Season",
-       x = "Team",
-       y = "Average Goals per Game") +
-  theme(
-    legend.position = "none",
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
-  ) 
+  data = LMH_data_long, 
+  mapping = aes(x = shots, 
+                y = goalsFor)) +
+  geom_boxplot() +
+  facet_wrap(~shotType, scales = "free_x", ncol = 1) +
+  labs(x = "Shots", y = "Goals")
+   
+#tibble(LMH_data)
 ```
