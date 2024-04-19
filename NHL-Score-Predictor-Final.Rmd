@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = F)
 
 # Load all needed packages
-pacman::p_load(tidyverse, dplyr, ggfittext)
+pacman::p_load(tidyverse, dplyr, ggfittext, patchwork)
 
 # Changing default themes
 theme_set(theme_bw())
@@ -296,13 +296,74 @@ LMH_data_long <-
                names_to = "shotType",
                values_to = "shots")
 
-ggplot(
-  data = LMH_data_long, 
-  mapping = aes(x = shots, 
-                y = goalsFor)) +
-  geom_boxplot() +
-  facet_wrap(~shotType, scales = "free_x", ncol = 1) +
-  labs(x = "Shots", y = "Goals")
-   
+low_graph <-
+  ggplot(
+    data = LMH_data, 
+    mapping = aes(
+      x = lowDangerShotsFor, 
+      y = lowDangerGoalsFor)) +
+  geom_point(
+    color = "#1C8C0B"
+  ) +
+  geom_smooth(
+    formula = y~x,
+    method = "loess",
+    se = F,
+    show.legend = F,
+    color = "#1C8C0B"
+  ) +
+  labs(
+    x = "Low Danger Shots",
+    y = "Low Danger Goals", 
+    title = "Low Danger Shots to Goals"
+  ) 
+
+med_graph <-
+  ggplot(
+    data = LMH_data, 
+    mapping = aes(
+      x = mediumDangerShotsFor, 
+      y = mediumDangerGoalsFor)) +
+  geom_point(
+    color = "#E6E20B"
+  ) +
+  geom_smooth(
+    formula = y~x,
+    method = "loess",
+    se = F,
+    show.legend = F,
+    color = "#E6E20B"
+  ) +
+  labs(
+    x = "Medium Danger Shots", 
+    y = "Medium Danger Goals", 
+    title = "Medium Danger Shots to Goals"
+  ) 
+
+high_graph <-
+  ggplot(
+    data = LMH_data, 
+    mapping = aes(
+      x = highDangerShotsFor, 
+      y = highDangerGoalsFor)) +
+  geom_point(
+    color = "#F23920"
+  ) +
+  geom_smooth(
+    formula = y~x,
+    method = "loess",
+    se = F,
+    show.legend = F,
+    color = "#F23920"
+  ) +
+  labs(
+    x = "High Danger Shots", 
+    y = "High Danger Goals", 
+    title = "High Danger Shots to Goals"
+  ) 
+
+
+(med_graph + high_graph) / low_graph
+
 #tibble(LMH_data)
 ```
