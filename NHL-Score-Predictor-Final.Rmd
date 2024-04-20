@@ -164,9 +164,10 @@ ggplot(
      expand = c(0,0,0.05,0),
      breaks = c(1,2,3,4,5.5,7)
 ) + 
-  labs(title = "Average Total Goals per Game for the 2023 Season",
+  labs(title = "Team Average Total Goals per Game during 2023 Season",
        x = "Team",
        y = "Average Goals per Game") +
+  theme_classic() +
   theme(
     legend.position = "none",
     axis.title.x = element_blank(),
@@ -310,7 +311,7 @@ low_graph <-
     method = "loess",
     se = F,
     show.legend = F,
-    color = "#1C8C0B"
+    color = "black"
   ) +
   labs(
     x = "Low Danger Shots",
@@ -332,7 +333,7 @@ med_graph <-
     method = "loess",
     se = F,
     show.legend = F,
-    color = "#E6E20B"
+    color = "black"
   ) +
   labs(
     x = "Medium Danger Shots", 
@@ -354,7 +355,7 @@ high_graph <-
     method = "loess",
     se = F,
     show.legend = F,
-    color = "#F23920"
+    color = "black"
   ) +
   labs(
     x = "High Danger Shots", 
@@ -363,7 +364,13 @@ high_graph <-
   ) 
 
 
-(med_graph + high_graph) / low_graph
+low_graph + med_graph + high_graph
+```
 
-#tibble(LMH_data)
+
+```{r Expected goals}
+
+
+
+
 ```
