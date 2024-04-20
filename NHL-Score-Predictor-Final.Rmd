@@ -267,6 +267,7 @@ shot_scatterplot <-
     #using jitter to make the density of points more visible 
     position=position_jitter(h=0.15,w=0.15)
   )+
+  
   #choosing colors for the over vs under value
   scale_color_manual(
     values = c(
@@ -282,9 +283,15 @@ shot_scatterplot <-
 
 shot_scatterplot
 ```
+<<<<<<< HEAD
+The purpose of this scatter plot is to attempt to visualize the correlation between total shots in a game and whether the over is cleared. From this scatterplot it is hard to see a clear correlation outside of the major outliers. This may indicate the presence of other factors that are more impactful towards the over/under outcome.
+
+## Graph3 - Same as above with low, medium, high danger shots - could use facet wrap
+=======
 ADD GRAPH DECRIPTION
 
 ## Low, Medium, High Danger Shots to Goals
+>>>>>>> c1a3f986f2da44585699f55b591d8fdf0929574b
 ```{r L/M/H Danger shots}
 LMH_data <-
   data |>
