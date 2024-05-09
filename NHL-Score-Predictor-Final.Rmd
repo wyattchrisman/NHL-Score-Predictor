@@ -609,6 +609,11 @@ confusionMatrix(
 
 ```
 
+##KNN Write Up
+
+
+
+
 ##Classification Tree
 ```{r full tree}
 
@@ -670,8 +675,6 @@ tree_pruned <-
 rpart.plot(x = tree_pruned,
            type = 5,
            extra = 101)
-
-
-
 ```
 
+The above R chunk creates a full classification tree using the data - any columns that have to do with goals because that makes is too unique to the training data set, as well as pretty unhelpful for our predicting circumstances. We then used strategies similar to those we employed in class and on the homework in order to find a cp value to prune the tree to. The result is a single node as Over, we interpret this to mean that our remaining columns are not impactful enough for the pruned tree, leading it to the lazy and yet still fairrly accurate assumption of over.
