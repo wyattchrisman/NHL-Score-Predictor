@@ -3,6 +3,9 @@ title: "NHL-Score-Predictor-Final"
 output:
   pdf_document: default
   html_document: default
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-04-16"
 ---
 
@@ -37,9 +40,13 @@ Our original data set was taken from moneypuck.com and has every NHL game since 
 
 \newpage
 
+\newpage
+
 ```{r Getting Data}
 # Get all NHL data from 2008 on
 all_years_data <- 
+  read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
+  #read.csv("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")       
   read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
   #read.csv("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")       
   
@@ -107,8 +114,12 @@ tibble(data)
 
 \newpage
 
+
+\newpage
+
 ## Data
 
+Our dataframe has many different columns. Here are some of the most important ones 1. Team - The team that is playing in that game 2. Season - The season year that the game is being played in 3. opposingTeam - The opponent that team is playing against in the game 3. totalGoals - The total number of goals that are scored during the game 4. OU - The result of the game if the over or under hit 5. totalShots - The total number of shots taken during the game
 Our dataframe has many different columns. Here are some of the most important ones 1. Team - The team that is playing in that game 2. Season - The season year that the game is being played in 3. opposingTeam - The opponent that team is playing against in the game 3. totalGoals - The total number of goals that are scored during the game 4. OU - The result of the game if the over or under hit 5. totalShots - The total number of shots taken during the game
 
 ## Average goals/game of each team in 2023
@@ -162,6 +173,13 @@ logos <-
 
 average_goals_data <- left_join(average_goals_data, logos, by = c("team" = "team_abbr"))
 
+logos <- 
+  team_logos_colors |>
+  filter(!(team_abbr %in% c("HAR", "MNS", "ATL"))) |>
+  select(team_abbr, team_logo_espn)
+
+average_goals_data <- left_join(average_goals_data, logos, by = c("team" = "team_abbr"))
+
 #Using ggplot to create a bar chart
 ggplot(
   data = average_goals_data, 
@@ -193,10 +211,15 @@ ggplot(
   geom_image(
     aes(image = team_logo_espn)
   ) + 
+  ) +
+  geom_image(
+    aes(image = team_logo_espn)
+  ) + 
   scale_y_continuous(
      expand = c(0,0,0.05,0),
      breaks = c(1,2,3,4,5,5.5,6,7)
 ) + 
+  labs(title = "Average Total Goals per Game during 2023 Season",
   labs(title = "Average Total Goals per Game during 2023 Season",
        x = "Team",
        y = "Average Goals per Game") +
@@ -211,6 +234,8 @@ ggplot(
 The easiest thing to see on this graph is that nearly every team averaged more than 5.5 goals in their games. But, we have to keep into consideration that this would cause the over to hit only if 6 goals were scored. So that is only the right 2/3 of teams that average the over. It is very obvious to see that no teams average an under during their games.
 
 This makes you think, would you successfully be able to bet the over on every game and make profit? This question is not as easily answered as we would hope. Later on we will see more data to show the complexity of this question.
+
+\newpage
 
 \newpage
 
@@ -285,6 +310,8 @@ This graph gives a better visualization what percentage of teams hit the under a
 
 \newpage
 
+\newpage
+
 ## Total Shots Correlation to Over
 
 ```{r total shot scatterplot}
@@ -309,10 +336,14 @@ shot_scatterplot <-
     #using jitter to make the density of points more visible 
     position=position_jitter(h=0.15,w=0.15),
     alpha = 0.6
+    position=position_jitter(h=0.15,w=0.15),
+    alpha = 0.6
   )+
   #choosing colors for the over vs under value
   scale_color_manual(
     values = c(
+      "Over" = "#76b5c5",
+      "Under" = "#e28743"
       "Over" = "#76b5c5",
       "Under" = "#e28743"
     )
@@ -328,6 +359,8 @@ shot_scatterplot
 ```
 
 The purpose of this scatter plot is to attempt to visualize the correlation between total shots in a game and whether the over hits. From this scatter plot it is hard to see a clear correlation outside of the major outliers. The large mass of the data is clumped together and does not show any real trend. We cannot conclude much information from this graph when it comes to total shots taken in correlation to the over or under. This may indicate the presence of other factors that are more impactful towards the over/under outcome than shots, which we found to not be significant.
+
+\newpage
 
 \newpage
 
