@@ -306,14 +306,14 @@ shot_scatterplot <-
          ) +
   geom_point(
     #using jitter to make the density of points more visible 
-    position=position_jitter(h=0.15,w=0.15)
+    position=position_jitter(h=0.15,w=0.15),
+    alpha = 0.6
   )+
-  
   #choosing colors for the over vs under value
   scale_color_manual(
     values = c(
-      "Over" = "#3e9c35",
-      "Under" = "#FF0000"
+      "Over" = "#76b5c5",
+      "Under" = "#e28743"
     )
   ) + 
   labs(
@@ -414,7 +414,7 @@ high_graph <-
 low_graph + med_graph + high_graph
 ```
 
-Every shot taken during the game will fall into one of three categories depending on the play situation as well as the area on the ice that the shot is taken. The same aspect applies to all goals scored. Here we are showing the regression lines of the correlation between each of these shot types and their goal types. You can see that each regression line follows a pattern. With the low danger shots has a linear slope that is not very steep. This shows that when low danger goals are not as frequent, which is not a surprise. Then, medium danger shots has a steeper linear slope that stays continuously linear. Finally, we have high danger shots which has an even steeper slope that the medium danger but plateaus out at the end. So we can see that the relationship between each shot type and their corresponding goals is linear. This allows us to conclude that the correlation between each shot type and their goal type is high. This could cause multicollinearity issues when we begin out regression model for predicting total goals.
+Every shot taken during the game will fall into one of three categories depending on the play situation as well as the area on the ice that the shot is taken. For example a high danger shot would be if the player was uncontested right in front of the goalie, while a medium danger shot would be if the player was a little bit farther from the goalie and could be slightly contested, and a low danger shot would have the player far away from the goalie and highly contested. The same aspect applies to all goals scored. Here we are showing the regression lines of the correlation between each of these shot types and their goal types. You can see that each regression line follows a pattern. With the low danger shots has a linear slope that is not very steep. This shows that when low danger goals are not as frequent, which is not a surprise. Then, medium danger shots has a steeper linear slope that stays continuously linear. Finally, we have high danger shots which has an even steeper slope that the medium danger but plateaus out at the end. So we can see that the relationship between each shot type and their corresponding goals is linear. This allows us to conclude that the correlation between each shot type and their goal type is high. This could cause multicollinearity issues when we begin our regression model for predicting total goals.
 
 ## Expected Goals to Actual Goals
 
