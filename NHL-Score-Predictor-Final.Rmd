@@ -462,14 +462,12 @@ standardize <- function(x){
   return(stan_x)
 }
 
-#Preparing data to be soley quantitative
+#Preparing data to be soley quantitative and removing number of goals
 data_quantitative <- data |> 
- 
-  select(totalGoals:highDangerGoalsAgainst, -OU) 
-  # mutate(
-  #     OU = if_else(OU == "Over", 1, 0)
-  # )
-
+  select(totalGoals:highDangerGoalsAgainst, -c(OU, goalsFor, goalsAgainst, lowDangerGoalsFor, lowDangerGoalsAgainst,
+    mediumDangerGoalsFor, mediumDangerGoalsAgainst, highDangerGoalsFor, highDangerGoalsAgainst) 
+    )
+       
 #Normalizing the data
 norm_data <- 
   data_quantitative |> 
@@ -578,7 +576,7 @@ knn_results |>
   slice_max(Acc)
 
 ```
-The above graph and tibble show that our most accurate option is a normalized data set with a k value of 37. These values will now be used to to create a confusion matrix for c
+The above graph and tibble show that our most accurate option is a standardized data set with a k value of 73. These values will now be used to to create a confusion matrix for comparing our predicted values to the actual. In finding the most accurate setup for our KNN we look use totalGoals to train our predictions, this is the most important, and soley decides, whether and over/under is hit. Making it numerical was also best for calulating the mean and finding the most accurate value of K. For the sake of creating a confusion matrix, our predicted data will be based on the data's OU column. This is what we're actually interested in predicting and will also fit the matrixt format more preferably.
 
 ```{r}
 
@@ -587,7 +585,7 @@ knn_goal_prediction <-
   knn.cv(
     train = stan_data[ , -1],
     cl = data$OU,
-    k = 37
+    k = 73
   )
 
 
