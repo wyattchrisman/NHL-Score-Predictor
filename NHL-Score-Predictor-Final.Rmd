@@ -505,10 +505,71 @@ fit_rescale_stats
 
 ```
 
-{r Expected goals}
+## Classification Tree
+
+```{r Classification Tree}
+
+data_2023 <- 
+  data |>  
+  filter(season == 2023) |> 
+  select(-goalsFor, -totalGoals, -goalsAgainst, -lowDangerGoalsFor, -lowDangerGoalsAgainst, -mediumDangerGoalsFor, -mediumDangerGoalsAgainst, -highDangerGoalsFor, -highDangerGoalsAgainst)
+
+nhl_tree_full <- 
+  rpart(
+    formula = OU ~ ., 
+    data = data_2023,
+    method = "class",
+    parms = list(split = "information"),
+    minsplit = 20, 
+    minbucket = 7, 
+    cp = 0.01
+    
+  )
+#Plot the full tree
+rpart.plot(
+  x = nhl_tree_full, 
+  type = 5
+)
+
+```
+This is the initial tree 
+```{r Finding xerror and cp cutoff}
+#Finding cp value and x cutoff
+nhl_tree_full |>
+  pluck("cptable") |> 
+  data.frame() |> 
+  slice_min(xerror, n = 1) |> 
+  mutate(xcutoff = xerror + xstd) |> 
+  pull(xcutoff) ->
+  xcutoff
+
+nhl_tree_full |> 
+  pluck("cptable") |> 
+  data.frame() |> 
+  filter(xerror < xcutoff) |> 
+  slice(1) |> 
+  pull(CP) ->
+  cp_cutoff
+
+c("xerror cutoff" = xcutoff, 
+  "cp prune value" = cp_cutoff)
 
 
 
+
+```
+
+```{r Prune the tree}
+prune(tree = nhl_tree_full, 
+      cp = cp_cutoff) -> nhl_pruned
+
+#Plot
+rpart.plot(x = nhl_pruned, 
+           type = 5, 
+         extra = 105,
+        fallen.leaves = FALSE,
+       main = "Predicting over and under by all variables",
+      )
 
 ```
 #Conclusion
