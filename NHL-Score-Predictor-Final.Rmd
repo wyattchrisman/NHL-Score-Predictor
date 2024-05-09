@@ -211,10 +211,6 @@ ggplot(
   geom_image(
     aes(image = team_logo_espn)
   ) + 
-  ) +
-  geom_image(
-    aes(image = team_logo_espn)
-  ) + 
   scale_y_continuous(
      expand = c(0,0,0.05,0),
      breaks = c(1,2,3,4,5,5.5,6,7)
@@ -229,6 +225,7 @@ ggplot(
     axis.title.x = element_blank(),
     axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
+)
 ```
 
 The easiest thing to see on this graph is that nearly every team averaged more than 5.5 goals in their games. But, we have to keep into consideration that this would cause the over to hit only if 6 goals were scored. So that is only the right 2/3 of teams that average the over. It is very obvious to see that no teams average an under during their games.
@@ -335,15 +332,11 @@ shot_scatterplot <-
   geom_point(
     #using jitter to make the density of points more visible 
     position=position_jitter(h=0.15,w=0.15),
-    alpha = 0.6
-    position=position_jitter(h=0.15,w=0.15),
-    alpha = 0.6
+    alpha = 0.6,
   )+
   #choosing colors for the over vs under value
   scale_color_manual(
     values = c(
-      "Over" = "#76b5c5",
-      "Under" = "#e28743"
       "Over" = "#76b5c5",
       "Under" = "#e28743"
     )
@@ -356,6 +349,7 @@ shot_scatterplot <-
   theme_classic()
 
 shot_scatterplot
+
 ```
 
 The purpose of this scatter plot is to attempt to visualize the correlation between total shots in a game and whether the over hits. From this scatter plot it is hard to see a clear correlation outside of the major outliers. The large mass of the data is clumped together and does not show any real trend. We cannot conclude much information from this graph when it comes to total shots taken in correlation to the over or under. This may indicate the presence of other factors that are more impactful towards the over/under outcome than shots, which we found to not be significant.
@@ -543,7 +537,7 @@ tibble(
   )
 )
 ```
-We'll use a line graph and slice function to decide our 
+We'll use a line graph and slice function to decide our rescale method and K value. The line graph is helpful for visualing the comparison between rescales and seeing large scale trends that have to do with the K value, but we'll use slice to accurately select the one with the greatest accuracy.
 
 ```{r}
 knn_results |> 
@@ -584,7 +578,7 @@ knn_results |>
   slice_max(Acc)
 
 ```
-The above graph and tibble show that our most accurate option is a normalized data set with a k value of 37.
+The above graph and tibble show that our most accurate option is a normalized data set with a k value of 37. These values will now be used to to create a confusion matrix for c
 
 ```{r}
 
@@ -599,11 +593,7 @@ knn_goal_prediction <-
 
 # confusionMatrix() in the caret package
 confusionMatrix(
-  data =  knn.cv(
-    train = stan_data[ , -1],
-    cl = data$OU,
-    k = 37
-  ),
+  data = knn_goal_prediction,
   reference = factor(data$OU, levels = c("Over", "Under"))
 )
 
