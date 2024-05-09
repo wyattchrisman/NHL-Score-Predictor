@@ -416,6 +416,91 @@ low_graph + med_graph + high_graph
 
 Every shot taken during the game will fall into one of three categories depending on the play situation as well as the area on the ice that the shot is taken. For example a high danger shot would be if the player was uncontested right in front of the goalie, while a medium danger shot would be if the player was a little bit farther from the goalie and could be slightly contested, and a low danger shot would have the player far away from the goalie and highly contested. The same aspect applies to all goals scored. Here we are showing the regression lines of the correlation between each of these shot types and their goal types. You can see that each regression line follows a pattern. With the low danger shots has a linear slope that is not very steep. This shows that when low danger goals are not as frequent, which is not a surprise. Then, medium danger shots has a steeper linear slope that stays continuously linear. Finally, we have high danger shots which has an even steeper slope that the medium danger but plateaus out at the end. So we can see that the relationship between each shot type and their corresponding goals is linear. This allows us to conclude that the correlation between each shot type and their goal type is high. This could cause multicollinearity issues when we begin our regression model for predicting total goals.
 
+## KNN
+# Rescaling the Data
+```{r Rescaling the Data}
+# Normalize function:
+normalize <- function(x){
+  norm_x <- (x - min(x)) / (max(x)-min(x))
+  return(norm_x)
+}
+
+#Standardized function:
+standardize <- function(x){
+  stan_x <- (x - mean(x)) / sd(x)
+  return(stan_x)
+}
+
+#Preparing data to be soley quantitative
+data_quantitative <- data |> 
+  select(totalGoals:highDangerGoalsAgainst) |> 
+  mutate(
+      OU = if_else(OU == "Over", 1, 0)
+  )
+
+#Normalizing the data
+norm_data <- 
+  data_quantitative |> 
+  mutate(
+    across(
+      .cols = -OU,
+      .fns = normalize
+    )
+  )
+
+#Standardizing the data
+stan_data <- 
+  data_quantitative |> 
+  mutate(
+    across(
+      .cols = -OU,
+      .fns = standardize
+    )
+  )
+
+```
+
+## Deciding rescale method and k value
+```{r k decision}
+# Let's look over k = 1 to 100
+k_vec <- seq(1:5)
+
+# Creating a data.frame named fit_stats_norm to store the results in:
+fit_rescale_stats <- 
+  data.frame(
+    k = k_vec,
+    Norm_R2 = rep(-1, length(k_vec)),
+    Norm_rmse = rep(-1, length(k_vec)),
+    Stan_R2 = rep(-1, length(k_vec)),
+    Stan_rmse = rep(-1, length(k_vec))
+  )
+
+
+# Looping through the results
+for(i in 1:nrow(fit_rescale_stats)){
+  norm_knn_loop <- 
+    knn.reg(
+      train = norm_data[ , -1],
+      y = norm_data$OU,
+      k = k_vec[i]
+    )
+  # stan_knn_loop <- 
+  #   knn.reg(
+  #     train = stan_data[ , -1],
+  #     y = stan_data$OU,
+  #     k = k_vec[i]
+  #   )
+  fit_rescale_stats[i, "Norm_R2"] <- norm_knn_loop$R2Pred
+  
+  fit_rescale_stats[i, "Norm_rmse"] <- sqrt( norm_knn_loop$PRESS/(nrow(norm_data)-1))
+  # 
+  # fit_rescale_stats[i, "Stan_R2"] <- stan_knn_loop$R2Pred
+  # 
+  # fit_rescale_stats[i, "Stan_rmse"] <- sqrt( stan_knn_loop$PRESS/(nrow(stan_data)-1))
+}
+
+fit_rescale_stats
+
 ## Expected Goals to Actual Goals
 
 ```{r Expected goals}
