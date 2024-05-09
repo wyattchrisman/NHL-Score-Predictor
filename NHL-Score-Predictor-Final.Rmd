@@ -1,6 +1,8 @@
 ---
 title: "NHL-Score-Predictor-Final"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-04-16"
 ---
 
@@ -11,7 +13,10 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = F)
 
 # Load all needed packages
-pacman::p_load(tidyverse, dplyr, ggfittext, patchwork)
+install.packages("devtools")
+devtools::install_github("danmorse314/hockeyR")
+pacman::p_load(tidyverse, dplyr, ggfittext, patchwork, hockeyR, ggimage)
+
 
 # Changing default themes
 theme_set(theme_bw())
@@ -30,15 +35,17 @@ In the NHL, there are many ways for fans to bet on the games. One of those ways 
 
 Our original data set was taken from moneypuck.com and has every NHL game since 2008. In the chunk below we will be taking a sample of this data which will be all NHL games from the last 10 years. The original data has a row for every game scenario, (even strength, power play, penalty kill, etc.). So, we will be trimming this data so we get the statistics from each game in all scenarios combined. I do not suspect any sampling bias because this is just the most recent data because we do not need data going back in time that far. This data is from an observational study with 203,360 observations. This data interests us because we have wondered if it was possible to 'outsmart' the sports betting companies with data analysis or an algorithm. This data should be interesting to others because it will allow a visualization of different game statistics to attempt to find a correlation to total goals scored. The original data frame had 111 columns which we do not need nearly that many so we trimmed it down to 29 columns, with some being ones that we made for out analysis.
 
+\newpage
+
 ```{r Getting Data}
 # Get all NHL data from 2008 on
 all_years_data <- 
-  read.csv("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")      #read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
+  read.csv(url("https://wchrisma.w3.uvm.edu/DS-data/all_teams.csv")) 
+  #read.csv("https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv")       
   
 # Clip data to be >2013 and all situations
 data <-
   all_years_data |>
-  filter(season > 2013) |>
   filter(situation == 'all')
 
 # Select all columns wanted for graphs and remove duplicates of same team
@@ -96,15 +103,12 @@ rm(cols_to_move, df_without_last_cols, insert_position)
 # Preview vector
 tibble(data)
 ```
+
+\newpage
+
 ## Data
 
-Our dataframe has many differt columns. Here are some of the most important ones
-1. Team - The team that is playing in that game
-2. Season - The season year that the game is being played in
-3. opposingTeam - The opponent that team is playing against in the game
-3. totalGoals - The total number of goals that are scored during the game
-4. OU - The result of the game if the over or under hit
-5. totalShots - The total number of shots taken during the game
+Our dataframe has many different columns. Here are some of the most important ones 1. Team - The team that is playing in that game 2. Season - The season year that the game is being played in 3. opposingTeam - The opponent that team is playing against in the game 3. totalGoals - The total number of goals that are scored during the game 4. OU - The result of the game if the over or under hit 5. totalShots - The total number of shots taken during the game
 
 ## Average goals/game of each team in 2023
 
@@ -150,6 +154,13 @@ average_goals_data <-
   group_by(team) |>
   summarize(average_goals = mean(totalGoals))
 
+logos <- 
+  team_logos_colors |>
+  filter(!(team_abbr %in% c("HAR", "MNS", "ATL"))) |>
+  select(team_abbr, team_logo_espn)
+
+average_goals_data <- left_join(average_goals_data, logos, by = c("team" = "team_abbr"))
+
 #Using ggplot to create a bar chart
 ggplot(
   data = average_goals_data, 
@@ -178,11 +189,14 @@ ggplot(
     linetype = "dashed", 
     color = "white"
   ) +
+  geom_image(
+    aes(image = team_logo_espn)
+  ) + 
   scale_y_continuous(
      expand = c(0,0,0.05,0),
      breaks = c(1,2,3,4,5,5.5,6,7)
 ) + 
-  labs(title = "Team Average Total Goals per Game during 2023 Season",
+  labs(title = "Average Total Goals per Game during 2023 Season",
        x = "Team",
        y = "Average Goals per Game") +
   theme_classic() +
@@ -191,13 +205,13 @@ ggplot(
     axis.title.x = element_blank(),
     axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)
   ) 
-
-# Want to add teams logo to top of each bar
 ```
 
 The easiest thing to see on this graph is that nearly every team averaged more than 5.5 goals in their games. But, we have to keep into consideration that this would cause the over to hit only if 6 goals were scored. So that is only the right 2/3 of teams that average the over. It is very obvious to see that no teams average an under during their games.
 
 This makes you think, would you successfully be able to bet the over on every game and make profit? This question is not as easily answered as we would hope. Later on we will see more data to show the complexity of this question.
+
+\newpage
 
 ## Over Under Probability
 
@@ -268,6 +282,8 @@ ggplot(
 
 This graph gives a better visualization what percentage of teams hit the under and over throughout the course of the season. There is a very large 20% gap between the highest and lowest percentage which shows a large variability in teams odds. But if you look back to the previous graph, you can see that these teams are not in the same order, but are in the same general area. When we only consider that one team averages more total goals in their game we are neglecting how many total goals their opponent averages. For example. If we have a game of SEA vs TOR, would you expect the over or under to hit? There are too many factors coming into play to give an easy answer to that question. Soon, we will look at some of those factors.
 
+\newpage
+
 ## Total Shots Correlation to Over
 
 ```{r total shot scatterplot}
@@ -311,6 +327,8 @@ shot_scatterplot
 ```
 
 The purpose of this scatter plot is to attempt to visualize the correlation between total shots in a game and whether the over hits. From this scatter plot it is hard to see a clear correlation outside of the major outliers. The large mass of the data is clumped together and does not show any real trend. We cannot conclude much information from this graph when it comes to total shots taken in correlation to the over or under. This may indicate the presence of other factors that are more impactful towards the over/under outcome than shots, which we found to not be significant.
+
+\newpage
 
 ## Low, Medium, High Danger Shots to Goals
 
@@ -398,7 +416,7 @@ low_graph + med_graph + high_graph
 
 Every shot taken during the game will fall into one of three categories depending on the play situation as well as the area on the ice that the shot is taken. The same aspect applies to all goals scored. Here we are showing the regression lines of the correlation between each of these shot types and their goal types. You can see that each regression line follows a pattern. With the low danger shots has a linear slope that is not very steep. This shows that when low danger goals are not as frequent, which is not a surprise. Then, medium danger shots has a steeper linear slope that stays continuously linear. Finally, we have high danger shots which has an even steeper slope that the medium danger but plateaus out at the end. So we can see that the relationship between each shot type and their corresponding goals is linear. This allows us to conclude that the correlation between each shot type and their goal type is high. This could cause multicollinearity issues when we begin out regression model for predicting total goals.
 
-# Expected Goals to Actual Goals
+## Expected Goals to Actual Goals
 
 ```{r Expected goals}
 
