@@ -503,7 +503,9 @@ fit_rescale_stats
 
 ## Expected Goals to Actual Goals
 
-```{r Expected goals}
+```
+
+{r Expected goals}
 
 
 
